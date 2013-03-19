@@ -91,10 +91,12 @@ public:
 };
 
 template<class FP>
-MandelbrotSet<FP>::MandelbrotSet(FP xmin, FP xmax, FP ymin, FP ymax,
-                                 int xpix, int ypix,
-                                 FP xspace, FP yspace,
-                                 long shallow_iter, long maxit)
+MandelbrotSet<FP>::MandelbrotSet(
+    FP xmin, FP xmax, FP ymin, FP ymax,
+    int xpix, int ypix,
+    FP xspace, FP yspace,
+    long shallow_iter, long maxit
+)
 {
   this->xmin = xmin;
   this->xmax = xmax;
@@ -162,7 +164,7 @@ MandelbrotSet<FP>::create_conservative_mandelbrot_set()
         for (int xi = 0; xi < pixel_grid; xi++)
         {
 	  // Optimize here: If mandelbrot_set[y][x] already has been set,
-	  // don't even bother to calculate if the position diverges.
+	  // don't even bother to calculate whether the position diverges.
           if (mandelbrot_set[y][x] /// RARARARARAR
 	      || (mandelbrot_set[y][x] = diverge(xpos + xspace / pixel_grid / 2 + xspace / pixel_grid * xi,
                                               ypos + yspace / pixel_grid / 2 + yspace / pixel_grid * yi)))
@@ -921,15 +923,27 @@ int main(int argc, char** argv)
     }
     if (!strncmp(arg, "--xpix=", strlen("--xpix=")))
     {
-      maxit = atoi(&arg[strlen("--xpix=")]);
+      xpix = atoi(&arg[strlen("--xpix=")]);
       cout << "xpix = " << xpix << endl;
     }
     if (!strncmp(arg, "--ypix=", strlen("--ypix=")))
     {
-      maxit = atoi(&arg[strlen("--ypix=")]);
+      ypix = atoi(&arg[strlen("--ypix=")]);
       cout << "ypix = " << ypix << endl;
     }
   }
+
+  //
+  // Either we can pass the Conservative Mandelbrot Set to the
+  // Buddhabrot constructor or the Buddhabrot object will have to create it.
+  // If we create such a set first, we should store it to disk for later
+  // reuse by this program.
+  // This functionality will have to be controlled from the command line.
+  //
+  // Use GMP for better precision.
+  // Support for interruption. Store away the current state when interrupted.
+  // Create shell script for launching.
+  //
 
   //cout << "Starting at: " << localtime(0) << "\r\n";
   std::cout << "The bmp file is going to be of size " << filesize << endl;
@@ -949,3 +963,4 @@ int main(int argc, char** argv)
 }
 
 // Portion of pixels in Mandelbrot Set is 22.3356%.
+
